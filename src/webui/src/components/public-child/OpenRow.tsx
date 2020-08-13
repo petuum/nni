@@ -3,10 +3,9 @@ import * as copy from 'copy-to-clipboard';
 import { Stack, PrimaryButton, Pivot, PivotItem } from 'office-ui-fabric-react';
 import { Trial } from '../../static/model/trial';
 import { MANAGER_IP } from '../../static/const';
-import { EXPERIMENT, TRIALS } from '../../static/datamodel';
+import { TRIALS } from '../../static/datamodel';
 import JSONTree from 'react-json-tree';
-import PaiTrialLog from '../public-child/PaiTrialLog';
-import TrialLog from '../public-child/TrialLog';
+// import TrialLog from '../public-child/TrialLog';
 import MessageInfo from '../Modals/MessageInfo';
 import '../../static/style/overview.scss';
 import '../../static/style/copyParameter.scss';
@@ -65,7 +64,7 @@ class OpenRow extends React.Component<OpenRowProps, OpenRowState> {
         const { isHidenInfo, typeInfo, info } = this.state;
         const trialId = this.props.trialId;
         const trial = TRIALS.getTrial(trialId);
-        const logPathRow = trial.info.logPath || 'This trial\'s log path is not available.';
+        // const logPathRow = trial.info.logPath || 'This trial\'s log path is not available.';
         return (
             <Stack className="openRow">
                 <Stack className="openRowContent">
@@ -100,36 +99,42 @@ class OpenRow extends React.Component<OpenRowProps, OpenRowState> {
                                     </Stack>
                             }
                         </PivotItem>
-                        <PivotItem headerText="Log" key="2" itemIcon="M365InvoicingLogo">
-                            {
-                                // FIXME: this should not be handled in web UI side
-                                EXPERIMENT.trainingServicePlatform !== 'local'
-                                    ?
-                                    <PaiTrialLog
-                                        logStr={logPathRow}
-                                        id={trialId}
-                                        logCollection={EXPERIMENT.logCollectionEnabled}
-                                    />
-                                    :
-                                    <div>
-                                        <TrialLog logStr={logPathRow} id={trialId} />
-                                        {/* view each trial log in drawer*/}
-                                        <div id="trialog">
-                                            <div className="copy" style={{ marginTop: 15 }}>
-                                                <PrimaryButton
-                                                    onClick={this.openTrialLog.bind(this, 'TRIAL_LOG')}
-                                                    text="View trial log"
-                                                />
-                                                <PrimaryButton
-                                                    onClick={this.openTrialLog.bind(this, 'TRIAL_ERROR')}
-                                                    text="View trial error"
-                                                    styles={{ root: { marginLeft: 15 } }}
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-                            }
-                        </PivotItem>
+                        /** TODO: (Petuum)
+                         * bring back PivotItem for Log for ADL training services
+                         * ensure logPathRow (trial.info.logPath) is correct
+                         * make sure it is accessible here
+                         * decide if we need handle the log format below specially
+                         */
+                        {/*<PivotItem headerText="Log" key="2" itemIcon="M365InvoicingLogo">*/}
+                        {/*    {*/}
+                        {/*        // FIXME: this should not be handled in web UI side*/}
+                        {/*        EXPERIMENT.trainingServicePlatform !== 'local'*/}
+                        {/*            ?*/}
+                        {/*            <PaiTrialLog*/}
+                        {/*                logStr={logPathRow}*/}
+                        {/*                id={trialId}*/}
+                        {/*                logCollection={EXPERIMENT.logCollectionEnabled}*/}
+                        {/*            />*/}
+                        {/*            :*/}
+                        {/*            <div>*/}
+                        {/*                <TrialLog logStr={logPathRow} id={trialId} />*/}
+                        {/*                /!* view each trial log in drawer*!/*/}
+                        {/*                <div id="trialog">*/}
+                        {/*                    <div className="copy" style={{ marginTop: 15 }}>*/}
+                        {/*                        <PrimaryButton*/}
+                        {/*                            onClick={this.openTrialLog.bind(this, 'TRIAL_LOG')}*/}
+                        {/*                            text="View trial log"*/}
+                        {/*                        />*/}
+                        {/*                        <PrimaryButton*/}
+                        {/*                            onClick={this.openTrialLog.bind(this, 'TRIAL_ERROR')}*/}
+                        {/*                            text="View trial error"*/}
+                        {/*                            styles={{ root: { marginLeft: 15 } }}*/}
+                        {/*                        />*/}
+                        {/*                    </div>*/}
+                        {/*                </div>*/}
+                        {/*            </div>*/}
+                        {/*    }*/}
+                        {/*</PivotItem>*/}
                     </Pivot>
                 </Stack >
             </Stack>
