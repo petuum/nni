@@ -106,6 +106,9 @@ export class MockedNNIManager extends Manager {
 
         return deferred.promise;
     }
+
+    public trialJobMessage = new Map<string, string>()
+
     public stopExperiment(): Promise<void> {
         throw new MethodNotImplementedError();
     }

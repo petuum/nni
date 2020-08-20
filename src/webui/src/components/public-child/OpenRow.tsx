@@ -99,6 +99,11 @@ class OpenRow extends React.Component<OpenRowProps, OpenRowState> {
                                     </Stack>
                             }
                         </PivotItem>
+                        <PivotItem headerText="Message" key="2" itemIcon="Info">
+                            <Stack id="message">
+                                <div>{trial.info.message !== undefined ? trial.info.message : "No message yet."}</div>
+                            </Stack>
+                        </PivotItem>
                         /** TODO: (Petuum)
                          * bring back PivotItem for Log for ADL training services
                          * ensure logPathRow (trial.info.logPath) is correct
