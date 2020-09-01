@@ -177,7 +177,12 @@ class TableList extends React.Component<TableListProps, TableListState> {
         isResizable: true,
         data: 'string',
         onColumnClick: this.onColumnClick,
-        className: 'tableHead leftTitle'
+        className: 'tableHead leftTitle',
+        onRender: (record): React.ReactNode => (
+            // webui_trialId = {trialId~jobId}-{parameterId}
+            // we keep the shortest trialId~jobId for intuitive tracking
+            <span>{record.jobId}</span>
+        )
     };
 
 
