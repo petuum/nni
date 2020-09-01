@@ -266,10 +266,6 @@ adl_trial_schema = {
         'command': setType('command', str),
         'gpuNum': setNumberRange('gpuNum', int, 0, 99999),
         'image': setType('image', str),
-        'checkpoint': {
-            'storageClass': setType('storageClass', str),
-            'storageSize': setType('storageSize', str)
-        },
         Optional('imagePullSecrets'): [{
             'name': setType('name', str)
         }],
@@ -277,6 +273,10 @@ adl_trial_schema = {
             'server': setType('server', str),
             'path': setType('path', str),
             'containerMountPath': setType('containerMountPath', str)
+        },
+        Optional('checkpoint'): {
+            'storageClass': setType('storageClass', str),
+            'storageSize': setType('storageSize', str)
         }
     }
 }
