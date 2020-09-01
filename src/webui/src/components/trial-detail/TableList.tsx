@@ -158,23 +158,141 @@ class TableList extends React.Component<TableListProps, TableListState> {
         this._expandedTrialIds = new Set<string>();
     }
 
-    /* Search related methods */
+    AccuracyColumnConfig: any = {
+        name: 'Default metric',
+        className: 'leftTitle',
+        key: 'latestAccuracy',
+        fieldName: 'latestAccuracy',
+        minWidth: 200,
+        maxWidth: 300,
+        isResizable: true,
+        data: 'number',
+        onColumnClick: this.onColumnClick,
+        onRender: (item): React.ReactNode => <TooltipHost content={item.formattedLatestAccuracy}>
+            <div className="ellipsis">{item.formattedLatestAccuracy}</div>
+        </TooltipHost>
+    };
 
-    // This functions as the filter for the final trials displayed in the current table
-    private _filterTrials(trials: TableObj[]): TableObj[] {
-        const { searchText, searchType } = this.state;
-        // search a trial by Trial No. | Trial ID | Parameters | Status
-        let searchFilter = (_: TableObj): boolean => true; // eslint-disable-line no-unused-vars
-        if (searchText.trim()) {
-            if (searchType === 'id') {
-                searchFilter = (trial): boolean => trial.id.toUpperCase().includes(searchText.toUpperCase());
-            } else if (searchType === 'trialnum') {
-                searchFilter = (trial): boolean => trial.sequenceId.toString() === searchText;
-            } else if (searchType === 'status') {
-                searchFilter = (trial): boolean => trial.status.toUpperCase().includes(searchText.toUpperCase());
-            } else if (searchType === 'parameters') {
-                // TODO: support filters like `x: 2` (instead of `'x': 2`)
-                searchFilter = (trial): boolean => JSON.stringify(trial.description.parameters).includes(searchText);
+    SequenceIdColumnConfig: any = {
+        name: 'Trial No.',
+        key: 'sequenceId',
+        fieldName: 'sequenceId',
+        minWidth: 80,
+        maxWidth: 240,
+        className: 'tableHead',
+        data: 'number',
+        onColumnClick: this.onColumnClick,
+    };
+
+    IdColumnConfig: any = {
+        name: 'ID',
+        key: 'id',
+        fieldName: 'id',
+        minWidth: 150,
+        maxWidth: 200,
+        isResizable: true,
+        data: 'string',
+        onColumnClick: this.onColumnClick,
+        className: 'tableHead leftTitle',
+        onRender: (record): React.ReactNode => (
+            // webui_trialId = {trialId~jobId}-{parameterId}
+            // we keep the shortest trialId~jobId for intuitive tracking
+            <span>{record.jobId}</span>
+        )
+    };
+
+
+    StartTimeColumnConfig: any = {
+        name: 'Start time',
+        key: 'startTime',
+        fieldName: 'startTime',
+        minWidth: 150,
+        maxWidth: 400,
+        isResizable: true,
+        data: 'number',
+        onColumnClick: this.onColumnClick,
+        onRender: (record): React.ReactNode => (
+            <span>{formatTimestamp(record.startTime)}</span>
+        )
+    };
+
+    EndTimeColumnConfig: any = {
+        name: 'End time',
+        key: 'endTime',
+        fieldName: 'endTime',
+        minWidth: 200,
+        maxWidth: 400,
+        isResizable: true,
+        data: 'number',
+        onColumnClick: this.onColumnClick,
+        onRender: (record): React.ReactNode => (
+            <span>{formatTimestamp(record.endTime, '--')}</span>
+        )
+    };
+
+    DurationColumnConfig: any = {
+        name: 'Duration',
+        key: 'duration',
+        fieldName: 'duration',
+        minWidth: 150,
+        maxWidth: 300,
+        isResizable: true,
+        data: 'number',
+        onColumnClick: this.onColumnClick,
+        onRender: (record): React.ReactNode => (
+            <span className="durationsty">{convertDuration(record.duration)}</span>
+        )
+    };
+
+    StatusColumnConfig: any = {
+        name: 'Status',
+        key: 'status',
+        fieldName: 'status',
+        className: 'tableStatus',
+        minWidth: 150,
+        maxWidth: 250,
+        isResizable: true,
+        data: 'string',
+        onColumnClick: this.onColumnClick,
+        onRender: (record): React.ReactNode => (
+            <span className={`${record.status} commonStyle`}>{record.status}</span>
+        ),
+    };
+
+    IntermediateCountColumnConfig: any = {
+        name: 'Intermediate result',
+        dataIndex: 'intermediateCount',
+        fieldName: 'intermediateCount',
+        minWidth: 150,
+        maxWidth: 200,
+        isResizable: true,
+        data: 'number',
+        onColumnClick: this.onColumnClick,
+        onRender: (record): React.ReactNode => (
+            <span>{`#${record.intermediateCount}`}</span>
+        )
+    };
+
+    showIntermediateModal = async (record: TrialJobInfo, event: React.SyntheticEvent<EventTarget>): Promise<void> => {
+        event.preventDefault();
+        event.stopPropagation();
+        const res = await axios.get(`${MANAGER_IP}/metric-data/${record.id}`);
+        if (res.status === 200) {
+            const intermediateArr: number[] = [];
+            // support intermediate result is dict because the last intermediate result is
+            // final result in a succeed trial, it may be a dict.
+            // get intermediate result dict keys array
+            const { intermediateKey } = this.state;
+            const otherkeys: string[] = [];
+            const metricDatas = res.data;
+            if (metricDatas.length !== 0) {
+                // just add type=number keys
+                const intermediateMetrics = parseMetrics(metricDatas[0].data);
+                for (const key in intermediateMetrics) {
+                    if (typeof intermediateMetrics[key] === 'number') {
+                        otherkeys.push(key);
+                    }
+                }
             }
         }
         return trials.filter(searchFilter);
