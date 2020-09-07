@@ -83,11 +83,6 @@ class SuccessTable extends React.Component<SuccessTableProps, SuccessTableState>
             className: 'tableHead leftTitle',
             data: 'string',
             onColumnClick: this.onColumnClick,
-            onRender: (record): React.ReactNode => (
-                // webui_trialId = {trialId~jobId}-{parameterId}
-                // we keep the shortest trialId~jobId for intuitive tracking
-                <span>{record.jobId}</span>
-            )
         }, {
             name: 'Duration',
             key: 'duration',
