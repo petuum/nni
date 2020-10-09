@@ -17,7 +17,7 @@ NNI 中也内置了一些流程的模型压缩算法。
 
     概述 <Compressor/Overview>
     快速入门 <Compressor/QuickStart>
-    Pruners <Compressor/Pruner>
+    Pruning <pruning>
     Quantizers <Compressor/Quantizer>
     自动模型压缩 <Compressor/AutoCompression>
     模型加速 <Compressor/ModelSpeedup>
