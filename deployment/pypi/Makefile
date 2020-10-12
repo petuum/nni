@@ -22,15 +22,26 @@ NNI_VERSION_VALUE := $(NNI_VERSION_VALUE:v%=%)
 ifeq ($(version_ts), true)
 	NNI_VERSION_VALUE := $(NNI_VERSION_VALUE).$(TIME_STAMP)
 endif
+# To include petuum info (commit count & downstream build identifier) in version value, run:
+# make petuum=true build
+ifeq ($(petuum), true)
+	COMMIT_COUNT = $(shell expr "$(shell git describe --tags)" : ".*-\([0-9]*\)-g.*")
+	NNI_VERSION_VALUE := $(NNI_VERSION_VALUE).$(COMMIT_COUNT)+petuum
+endif
 NNI_VERSION_TEMPLATE = 999.0.0-developing
 NNI_YARN_TARBALL ?= $(CWD)nni-yarn.tar.gz
 NNI_YARN_FOLDER ?= $(CWD)nni-yarn
 NNI_YARN := PATH=$(CWD)node-$(OS_SPEC)-x64/bin:$${PATH} $(NNI_YARN_FOLDER)/bin/yarn
+
+.PHONY: version
+version:
+	@echo $(NNI_VERSION_VALUE)
+
 .PHONY: build
 build:
 	# Building version $(NNI_VERSION_VALUE)
-	python3 -m pip install --user --upgrade setuptools wheel
-	wget -q $(NODE_URL) -O $(CWD)node-$(OS_SPEC)-x64.tar.xz
+	python3 -m pip install --upgrade setuptools wheel
+	wget -q https://aka.ms/nni/nodejs-download/$(OS_SPEC) -O $(CWD)node-$(OS_SPEC)-x64.tar.xz
 	rm -rf $(CWD)node-$(OS_SPEC)-x64
 	mkdir $(CWD)node-$(OS_SPEC)-x64
 	tar xf $(CWD)node-$(OS_SPEC)-x64.tar.xz -C node-$(OS_SPEC)-x64 --strip-components 1
@@ -57,8 +68,13 @@ build:
 
 .PHONY: upload
 upload:
-	python3 -m pip install --user --upgrade twine
+	python3 -m pip install --upgrade twine
+ifeq ($(petuum), true)
+	python3 -m twine upload --repository-url=http://pypi.int.petuum.com:8080/ -u "" -p "" dist/nni*.whl
+else
 	python3 -m twine upload dist/*
+endif
+
 
 .PHONY: clean
 clean:
