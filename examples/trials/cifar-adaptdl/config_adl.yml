@@ -12,10 +12,10 @@ tuner:
   classArgs:
     optimize_mode: minimize
 trial:
-  command: python3 /root/apps/pytorch-cifar/main_nni.py
+  command: python3 /root/examples/pytorch-cifar/main_nni.py
   codeDir: .
   gpuNum: 1
-  image: registry.petuum.com/dev/nni:tmp-nni-cifar-1.8
+  image: registry.petuum.com/dev/nni:tmp-nni-cifar-1.8-nfs
   imagePullSecrets:
     - name: stagingsecret
   adaptive: true
