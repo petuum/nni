@@ -52,6 +52,43 @@ class AdlTrainingService extends KubernetesTrainingService implements Kubernetes
         this.log.info('Construct Adl training service.');
     }
 
+    private async cleanStoppedAdapdlJob(trialJobId: string, kubernetesTrialJob: KubernetesTrialJobDetail): Promise<void> {
+        const trialJobDetail: KubernetesTrialJobDetail | undefined =  this.trialJobsMap.get(trialJobId);
+        if (trialJobDetail === undefined) {
+            const errorMessage: string = `CancelTrialJob: trial job id ${trialJobId} not found`;
+            this.log.error(errorMessage);
+
+            return Promise.reject(errorMessage);
+        }
+        if (this.kubernetesCRDClient === undefined) {
+            const errorMessage: string = `CancelTrialJob: trial job id ${trialJobId} failed because operatorClient is undefined`;
+            this.log.error(errorMessage);
+
+            return Promise.reject(errorMessage);
+        }
+
+        let kubernetesJobInfo: any;
+        try {
+            kubernetesJobInfo = await this.kubernetesCRDClient.getKubernetesJob(kubernetesTrialJob.kubernetesJobName);
+        } catch (error) {
+            // if no such job on cluster, just return
+            return Promise.resolve();
+        }
+
+        try {
+            await this.kubernetesCRDClient.deleteKubernetesJob(new Map(
+                [
+                    ['app', this.NNI_KUBERNETES_TRIAL_LABEL],
+                    ['expId', getExperimentId()],
+                    ['trialId', trialJobId]
+                ]
+            ));
+        } catch (err) {
+            // DONT throw error during cleanup
+        }
+        return Promise.resolve();
+    }
+
     public async run(): Promise<void> {
         this.log.info(this.tensorboardName);
         this.log.info('Start tensorboard deployment.');
@@ -71,6 +108,17 @@ class AdlTrainingService extends KubernetesTrainingService implements Kubernetes
             await this.adlJobInfoCollector.retrieveTrialStatus(this.kubernetesCRDClient);
             if (this.kubernetesJobRestServer.getErrorMessage !== undefined) {
                 throw new Error(this.kubernetesJobRestServer.getErrorMessage);
+            }
+
+            // Delete stopped adaptdl jobs
+            for (const [trialJobId, kubernetesTrialJob] of this.trialJobsMap) {
+                if (['SUCCEEDED', 'FAILED', 'USER_CANCELED', 'SYS_CANCELED', 'EARLY_STOPPED'].includes(kubernetesTrialJob.status)) {
+                    try {
+                        await this.cleanStoppedAdapdlJob(trialJobId, kubernetesTrialJob)
+                    } catch (error) {
+                    // DONT throw error during cleanup
+                    }
+                }
             }
         }
         this.log.info('Adl training service exit.');
