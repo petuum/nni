@@ -67,9 +67,8 @@ class AdlTrainingService extends KubernetesTrainingService implements Kubernetes
             return Promise.reject(errorMessage);
         }
 
-        let kubernetesJobInfo: any;
         try {
-            kubernetesJobInfo = await this.kubernetesCRDClient.getKubernetesJob(kubernetesTrialJob.kubernetesJobName);
+            await this.kubernetesCRDClient.getKubernetesJob(kubernetesTrialJob.kubernetesJobName);
         } catch (error) {
             // if no such job on cluster, just return
             return Promise.resolve();
