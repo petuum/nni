@@ -135,7 +135,7 @@ def main(params):
                 batch_stat = trainer.train(inputs, targets, stats)
             with stats.synchronized():
                 if IS_CHIEF:
-                    nni.report_intermediate_result(batch_stat["Loss"], stats)
+                    nni.report_intermediate_result(batch_stat["Loss"], accum=stats)
                 stats["loss_avg"] = stats["loss_sum"] / stats["total"]
                 writer.add_scalar("Loss/Train", stats["loss_avg"], epoch)
         with stats.synchronized():

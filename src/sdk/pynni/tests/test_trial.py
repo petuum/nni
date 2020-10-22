@@ -50,7 +50,7 @@ class TrialTestCase(TestCase):
         INTERMEDIATE_OFFSET = "intermediate_result_idx_offset"
         stats = et.Accumulator()
         with stats.synchronized():
-            res = nni.report_intermediate_result(123, stats)
+            res = nni.report_intermediate_result(123, accum=stats)
             self.assertEqual(stats[INTERMEDIATE_OFFSET], 1)
 
     def test_report_final_result_simple(self):
