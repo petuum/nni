@@ -156,7 +156,7 @@ def valid(epoch):
         writer.add_scalar("Loss/Valid", stats["loss_avg"], epoch)
         writer.add_scalar("Accuracy/Valid", stats["accuracy"], epoch)
         if IS_CHIEF:
-            nni.report_intermediate_result(stats["loss_avg"], stats)
+            nni.report_intermediate_result(stats["loss_avg"], accum=stats)
         print("Valid:", stats)
         return stats["loss_avg"]
         

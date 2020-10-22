@@ -590,7 +590,7 @@ def main(params):
                     writer.add_scalar("Accuracy/Valid", stats_eval["accuracy"], epoch)
                     if IS_CHIEF:
                         if epoch < params['num_train_epochs']-1:
-                            nni.report_intermediate_result(stats_eval['accuracy'], stats_eval)
+                            nni.report_intermediate_result(stats_eval['accuracy'], accum=stats_eval)
                             logger.debug('evaluation accuracy'.format(stats_eval['accuracy']))
                             logger.debug('Pipe send intermediate result done.')
                         else:
