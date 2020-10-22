@@ -111,7 +111,9 @@ def report_intermediate_result(metric, **kwargs):
 
     # An AdaptDL Accumulator which persists running state.
     adl_accum = kwargs.pop('accum', None)
+    print(adl_accum)
     if adl_accum:
+        print('######\ntest\n######')
         # It is only used together with AdaptDL library for distributed training.
         _intermediate_seq = adl_utils.sync_intermediate_seq(adl_accum)
 

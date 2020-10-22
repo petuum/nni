@@ -26,4 +26,5 @@ def sync_intermediate_seq(accum):
         accum[INTERMEDIATE_OFFSET] = 0
     intermediate_seq = accum[INTERMEDIATE_OFFSET]
     accum[INTERMEDIATE_OFFSET] += 1
+    print(accum.__dict__)
     return intermediate_seq
