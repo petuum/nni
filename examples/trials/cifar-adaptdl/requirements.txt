@@ -1,0 +1,7 @@
+adaptdl
+tensorboard
+
+--extra-index-url http://pypi.int.petuum.com:8080/simple
+--trusted-host pypi.int.petuum.com
+# The nni version should match your local `nnictl --version`
+nni==1.8.23+petuum
