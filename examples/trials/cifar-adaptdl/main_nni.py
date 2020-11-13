@@ -69,14 +69,14 @@ transform_test = transforms.Compose([
     transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010)),
 ])
 
-trainset = torchvision.datasets.CIFAR10(root=adaptdl.get_share_dir(), train=True, download=True, transform=transform_train)
-trainloader = et.ElasticDataLoader(trainset, batch_size=args.bs, shuffle=True, num_workers=2, drop_last=True)
+trainset = torchvision.datasets.CIFAR10(root=adaptdl.env.share_path(), train=True, download=True, transform=transform_train)
+trainloader = et.AdaptiveDataLoader(trainset, batch_size=args.bs, shuffle=True, num_workers=2, drop_last=True)
 
 if args.autoscale_bsz:
     trainloader.autoscale_batch_size(4096, local_bsz_bounds=(32, 1024))
 
-validset = torchvision.datasets.CIFAR10(root=adaptdl.get_share_dir(), train=False, download=False, transform=transform_test)
-validloader = et.ElasticDataLoader(validset, batch_size=100, shuffle=False, num_workers=2)
+validset = torchvision.datasets.CIFAR10(root=adaptdl.env.share_path(), train=False, download=False, transform=transform_test)
+validloader = et.AdaptiveDataLoader(validset, batch_size=100, shuffle=False, num_workers=2)
 
 # Model
 print('==> Building model..')
@@ -104,7 +104,7 @@ lr_scheduler = MultiStepLR(optimizer, [30, 45], 0.1)
 
 adaptdl.torch.init_process_group("nccl" if torch.cuda.is_available()
                                      else "gloo")
-net = et.ElasticDataParallel(net, optimizer, lr_scheduler)
+net = et.AdaptiveDataParallel(net, optimizer, lr_scheduler)
 
 # Training
 def train(epoch):
@@ -133,7 +133,7 @@ def train(epoch):
         stats["accuracy"] = stats["correct"] / stats["total"]
         writer.add_scalar("Loss/Train", stats["loss_avg"], epoch)
         writer.add_scalar("Accuracy/Train", stats["accuracy"], epoch)
-        writer.add_scalar("Config/Gpu", int(adaptdl._env.num_replicas()), epoch)
+        writer.add_scalar("Config/Gpu", int(adaptdl.env.num_replicas()), epoch)
         print("Train:", stats)
 
 def valid(epoch):
@@ -159,12 +159,11 @@ def valid(epoch):
             nni.report_intermediate_result(stats["loss_avg"], accum=stats)
         print("Valid:", stats)
         return stats["loss_avg"]
-        
 
 
 tensorboard_dir = os.path.join(
     os.getenv("ADAPTDLCTL_TENSORBOARD_LOGDIR", "/adaptdl/tensorboard"),
-    os.getenv("NNI_TRIAL_JOB_ID", "lr-adaptdl")
+    os.getenv("NNI_TRIAL_JOB_ID", "cifar-adaptdl")
 )
 if not os.path.exists(tensorboard_dir):
     os.makedirs(tensorboard_dir)
