@@ -27,7 +27,7 @@ parser.add_argument('--bs', default=128, type=int, help='batch size')
 parser.add_argument('--lr', default=0.1, type=float, help='learning rate')
 parser.add_argument('--epochs', default=30, type=int, help='number of epochs')
 parser.add_argument('--model', default='ResNet18', type=str, help='model')
-parser.add_argument('--autoscale-bsz', dest='autoscale_bsz', default=False, action='store_true', help='autoscale batchsize')
+parser.add_argument('--autoscale-bsz', dest='autoscale_bsz', default=True, action='store_true', help='autoscale batchsize')
 args = parser.parse_args()
 
 # load the parameters from nni
