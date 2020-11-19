@@ -127,8 +127,12 @@ def valid(epoch):
         stats["accuracy"] = stats["correct"] / stats["total"]
         writer.add_scalar("Loss/Valid", stats["loss_avg"], epoch)
         writer.add_scalar("Accuracy/Valid", stats["accuracy"], epoch)
+
+        if adaptdl.env.replica_rank() == 0:
+            nni.report_intermediate_result(stats["accuracy"], accum=stats)
+
         print("Valid:", stats)
-        return stats
+        return stats["accuracy"]
 
 
 # TODO BE-12547: Rename ADAPTDLCTL_TENSORBOARD_LOGDIR to ADAPTDL_TENSORBOARD_LOGDIR
@@ -143,11 +147,7 @@ with SummaryWriter(tensorboard_dir) as writer:
     acc = 0
     for epoch in adl.remaining_epochs_until(args.epochs):
         train(epoch)
-        stats = valid(epoch)
-        acc = stats["accuracy"]
-        if adaptdl.env.replica_rank() == 0:
-            nni.report_intermediate_result(acc, accum=stats)
-
+        acc = valid(epoch)
         lr_scheduler.step()
 
     if adaptdl.env.replica_rank() == 0:
