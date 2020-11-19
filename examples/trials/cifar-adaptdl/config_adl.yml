@@ -5,7 +5,7 @@ maxExecDuration: 3h
 maxTrialNum: 10
 nniManagerIp: 10.20.100.199
 trainingServicePlatform: adl
-searchSpacePath: search_space_demo.json
+searchSpacePath: search_space.json
 logCollection: http
 useAnnotation: false
 tuner:
@@ -13,7 +13,7 @@ tuner:
   classArgs:
     optimize_mode: minimize
 trial:
-  command: python3 /cifar10/main_nni.py
+  command: python3 /cifar10/main.py
   codeDir: .
   gpuNum: 1
   image: registry.petuum.com/dev/nni:cifar-example
