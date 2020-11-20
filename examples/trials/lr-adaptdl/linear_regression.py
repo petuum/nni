@@ -124,7 +124,7 @@ def main(params):
     # Accumulator is an api of adaptdl to record training status.
     stats = et.Accumulator()
     tensorboard_dir = os.path.join(
-        os.getenv("ADAPTDLCTL_TENSORBOARD_LOGDIR", "/adaptdl/tensorboard"),
+        os.getenv("ADAPTDL_TENSORBOARD_LOGDIR", "/adaptdl/tensorboard"),
         os.getenv("NNI_TRIAL_JOB_ID", "lr-adaptdl")
     )
     if not os.path.exists(tensorboard_dir):

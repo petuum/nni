@@ -152,9 +152,9 @@ def valid(epoch):
         return stats["accuracy"]
 
 
-# TODO BE-12547: Rename ADAPTDLCTL_TENSORBOARD_LOGDIR to ADAPTDL_TENSORBOARD_LOGDIR
+# TODO BE-12547: Rename ADAPTDL_TENSORBOARD_LOGDIR to ADAPTDL_TENSORBOARD_LOGDIR
 tensorboard_dir = os.path.join(
-    os.getenv("ADAPTDLCTL_TENSORBOARD_LOGDIR", "/adaptdl/tensorboard"),
+    os.getenv("ADAPTDL_TENSORBOARD_LOGDIR", "/adaptdl/tensorboard"),
     os.getenv("NNI_TRIAL_JOB_ID", "cifar-adaptdl")
 )
 if not os.path.exists(tensorboard_dir):

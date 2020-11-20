@@ -459,7 +459,7 @@ def main(params):
     model = adl.AdaptiveDataParallel(model, optimizer)
     
     tensorboard_dir = os.path.join(
-        os.getenv("ADAPTDLCTL_TENSORBOARD_LOGDIR", "/adaptdl/tensorboard"),
+        os.getenv("ADAPTDL_TENSORBOARD_LOGDIR", "/adaptdl/tensorboard"),
         os.getenv("NNI_TRIAL_JOB_ID", "lr-adaptdl")
     )
 
